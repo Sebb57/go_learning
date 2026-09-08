@@ -1,10 +1,11 @@
 package main
 
 import (
-	"bufio"
 	"fmt"
-	"go_bc/lexer"
+	"bufio"
 	"os"
+	"go_bc/lexer"
+	"go_bc/tree"
 )
 
 func main() {
@@ -18,9 +19,7 @@ func main() {
 			fmt.Println(err)
 			continue
 		}
-		for _, token := range lexedLine {
-			fmt.Println("type:", token.Type, "value:", token.Value)
-		}
+		fmt.Println(tree.Solve(lexedLine))
 	}
 
 	if err := scanner.Err(); err != nil {
