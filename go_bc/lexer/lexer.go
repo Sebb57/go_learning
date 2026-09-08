@@ -65,7 +65,7 @@ func LexInput(input string) ([]Token, error) {
 				}
 			}
 
-			if prevValNumber == false {
+			if prevValNumber == false && tokenType != LeftParen {
 				return nil, fmt.Errorf("unexpected %q symbol at position %d", element, i)
 			}
 			prevValNumber = false
