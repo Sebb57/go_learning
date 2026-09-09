@@ -38,6 +38,7 @@ func LexInput(input string) ([]Token, error) {
 	output := []Token{}
 	parenthesisCount := 0
 	prevValNumber := false
+	prevValOperand := false
 
 	for i := 0; i < len(input); {
 		element := rune(input[i])
@@ -68,6 +69,14 @@ func LexInput(input string) ([]Token, error) {
 			if prevValNumber == false && tokenType != LeftParen {
 				return nil, fmt.Errorf("unexpected %q symbol at position %d", element, i)
 			}
+			if prevValOperand == true && tokenType != LeftParen {
+				return nil, fmt.Errorf("unexpected %q symbol at position %d", element, i)
+			}
+			if tokenType == RightParen {
+				prevValOperand = false
+			} else {
+				prevValOperand = true
+			}
 			prevValNumber = false
 			output = append(output, Token{Type: tokenType, Value: string(element)})
 			i++
@@ -76,14 +85,13 @@ func LexInput(input string) ([]Token, error) {
 
 		if unicode.IsNumber(element) {
 			prevValNumber = true
+			prevValOperand = false
 			start := i
 			for i < len(input) && unicode.IsNumber(rune(input[i])) {
 				i++
 			}
 			output = append(output, Token{Type: Number, Value: input[start:i]})
 			continue
-		} else {
-			prevValNumber = false
 		}
 
 		return nil, fmt.Errorf("invalid character %q at position %d", element, i)
@@ -91,6 +99,9 @@ func LexInput(input string) ([]Token, error) {
 
 	if parenthesisCount != 0 {
 		return nil, fmt.Errorf("unclosed parenthesis")
+	}
+	if prevValOperand == true {
+		return nil, fmt.Errorf("unexpected additionnal symbol")
 	}
 	return output, nil
 }
